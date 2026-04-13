@@ -84,18 +84,18 @@ export default function HomePage() {
 
       {/* ── Footer ──────────────────────────────────────────────── */}
       <footer className="border-t border-[#e8e8e8] mt-auto">
-        <div className="max-w-7xl mx-auto px-8 py-8 flex items-center justify-between">
-          <p className="text-xs text-[#d8d6d6] font-medium uppercase tracking-widest">
-            Alleen voor intern gebruik
-          </p>
+        <div className="max-w-7xl mx-auto px-8 py-8 flex flex-col items-center gap-4">
           <Image
             src="/logos-footer.png"
             alt="ROM-D, REPP en Gemeente Dordrecht"
-            width={480}
-            height={60}
-            className="h-10 w-auto"
+            width={700}
+            height={80}
+            className="h-14 w-auto mx-auto"
             priority={false}
           />
+          <p className="text-xs text-[#d8d6d6] font-medium uppercase tracking-widest">
+            Alleen voor intern gebruik
+          </p>
         </div>
       </footer>
 
