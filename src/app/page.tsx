@@ -21,17 +21,12 @@ export default function HomePage() {
 
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <Image
-              src="/repp-icon.png"
-              alt="REPP logo"
-              width={48}
-              height={32}
-              className="h-8 w-auto"
-              priority
-            />
-            <span className="font-wordmark text-xl font-bold text-[#0f0f70] leading-none tracking-tight">
-              repp
-            </span>
+            {/* REPP drie ruiten icoon */}
+            <div className="flex items-center gap-[5px]">
+              <div className="w-4 h-4 bg-[#0f0f70] rotate-45" />
+              <div className="w-2.5 h-2.5 bg-[#0f0f70] rotate-45" />
+              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
+            </div>
             <div className="w-px h-5 bg-[#e8e8e8]" />
             <span className="text-xs font-semibold text-[#9a9898] uppercase tracking-widest">
               3e Merwedehaven

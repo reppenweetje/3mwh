@@ -2,8 +2,6 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-
 export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -44,14 +42,11 @@ export default function LoginPage() {
       <div className="hidden lg:flex w-1/2 bg-[#0f0f70] flex-col justify-between p-12">
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <Image
-            src="/repp-icon.png"
-            alt="REPP logo"
-            width={56}
-            height={38}
-            className="h-9 w-auto brightness-0 invert"
-            priority
-          />
+          <div className="flex items-center gap-[5px]">
+            <div className="w-4 h-4 bg-white rotate-45" />
+            <div className="w-2.5 h-2.5 bg-white rotate-45" />
+            <div className="w-3.5 h-3.5 bg-white rotate-45" />
+          </div>
           <span className="font-wordmark text-2xl font-bold text-white tracking-tight">repp</span>
         </div>
 
@@ -68,15 +63,12 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Footer logo groot */}
-        <Image
-          src="/repp-icon.png"
-          alt=""
-          width={120}
-          height={80}
-          className="w-24 h-auto brightness-0 invert opacity-10"
-          aria-hidden="true"
-        />
+        {/* Decoratief icoon groot */}
+        <div className="flex items-center gap-2 opacity-10">
+          <div className="w-10 h-10 bg-white rotate-45" />
+          <div className="w-6 h-6 bg-white rotate-45" />
+          <div className="w-8 h-8 bg-white rotate-45" />
+        </div>
       </div>
 
       {/* ── Rechter login panel ────────────────────────────────── */}
@@ -85,14 +77,11 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <Image
-              src="/repp-icon.png"
-              alt="REPP logo"
-              width={48}
-              height={32}
-              className="h-8 w-auto"
-              priority
-            />
+            <div className="flex items-center gap-[4px]">
+              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
+              <div className="w-2 h-2 bg-[#0f0f70] rotate-45" />
+              <div className="w-3 h-3 bg-[#0f0f70] rotate-45" />
+            </div>
             <span className="font-wordmark text-xl font-bold text-[#0f0f70]">repp</span>
           </div>
 
