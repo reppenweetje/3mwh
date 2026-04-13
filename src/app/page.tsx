@@ -1,65 +1,104 @@
-import Image from "next/image";
+import Image from 'next/image'
+import { parseLeads } from '@/lib/parseLeads'
+import AccordionTable from '@/components/AccordionTable'
+import LogoutButton from '@/components/LogoutButton'
 
-export default function Home() {
+
+export const dynamic = 'force-dynamic'
+
+export default function HomePage() {
+  const leads = parseLeads()
+
+  const topScore = leads.length ? Math.max(...leads.map((l) => l.score)) : 0
+  const metDocumenten = leads.filter((l) => l.documentsBundleUrl).length
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <main className="min-h-screen bg-white flex flex-col">
+
+      {/* ── Topbalk ─────────────────────────────────────────────── */}
+      <header className="border-b border-[#e8e8e8] bg-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+
+          {/* Logo */}
+          <div className="flex items-center gap-4">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/repp-icon.png"
+              alt="REPP logo"
+              width={48}
+              height={32}
+              className="h-8 w-auto"
+              priority
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <span className="font-wordmark text-xl font-bold text-[#0f0f70] leading-none tracking-tight">
+              repp
+            </span>
+            <div className="w-px h-5 bg-[#e8e8e8]" />
+            <span className="text-xs font-semibold text-[#9a9898] uppercase tracking-widest">
+              3e Merwedehaven
+            </span>
+          </div>
+
+          <LogoutButton />
         </div>
-      </main>
-    </div>
-  );
+      </header>
+
+      {/* ── Hero ────────────────────────────────────────────────── */}
+      <div className="border-b border-[#e8e8e8] bg-[#0f0f70]">
+        <div className="max-w-7xl mx-auto px-8 py-10 flex items-end justify-between gap-8">
+          <div>
+            <p className="text-xs font-bold text-[#edff00] uppercase tracking-widest mb-2">
+              Inschrijvingen dashboard
+            </p>
+            <h1 className="text-4xl font-black text-white leading-tight tracking-tight">
+              3e Merwedehaven
+            </h1>
+          </div>
+          {/* Stats inline in hero */}
+          <div className="flex items-center gap-8">
+            <div className="text-right">
+              <p className="text-4xl font-bold text-white">{leads.length}</p>
+              <p className="text-xs text-[#ffffff66] uppercase tracking-widest mt-0.5">Inschrijvingen</p>
+            </div>
+            <div className="w-px h-10 bg-[#ffffff20]" />
+            <div className="text-right">
+              <p className="text-4xl font-bold text-[#edff00]">{topScore}</p>
+              <p className="text-xs text-[#ffffff66] uppercase tracking-widest mt-0.5">Hoogste score</p>
+            </div>
+            {metDocumenten > 0 && (
+              <>
+                <div className="w-px h-10 bg-[#ffffff20]" />
+                <div className="text-right">
+                  <p className="text-4xl font-bold text-white">{metDocumenten}</p>
+                  <p className="text-xs text-[#ffffff66] uppercase tracking-widest mt-0.5">Met documenten</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Tabel ───────────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-8 py-10 w-full flex-1">
+        <AccordionTable leads={leads} />
+      </div>
+
+      {/* ── Footer ──────────────────────────────────────────────── */}
+      <footer className="border-t border-[#e8e8e8] mt-auto">
+        <div className="max-w-7xl mx-auto px-8 py-8 flex items-center justify-between">
+          <p className="text-xs text-[#d8d6d6] font-medium uppercase tracking-widest">
+            Alleen voor intern gebruik
+          </p>
+          <Image
+            src="/logos-footer.png"
+            alt="ROM-D, REPP en Gemeente Dordrecht"
+            width={480}
+            height={60}
+            className="h-10 w-auto"
+            priority={false}
+          />
+        </div>
+      </footer>
+
+    </main>
+  )
 }
