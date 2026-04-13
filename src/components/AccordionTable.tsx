@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { Lead } from '@/lib/types'
 import LeadRow from './LeadRow'
 import LeadExpandedPanel from './LeadExpandedPanel'
@@ -14,6 +14,7 @@ interface Props {
 export default function AccordionTable({ leads, manifest }: Props) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'score' | 'date'>('score')
+  const rowRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const filtered = useMemo(() => {
     let result = [...leads]
@@ -31,9 +32,18 @@ export default function AccordionTable({ leads, manifest }: Props) {
     return result
   }, [leads, sortBy])
 
-  function toggle(id: string) {
-    setOpenId((prev) => (prev === id ? null : id))
-  }
+  const toggle = useCallback((id: string) => {
+    setOpenId((prev) => {
+      const opening = prev !== id
+      if (opening) {
+        // Scroll de rij naar de bovenkant van het scherm na uitklappen
+        setTimeout(() => {
+          rowRefs.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 50)
+      }
+      return opening ? id : null
+    })
+  }, [])
 
   return (
     <div>
@@ -62,7 +72,7 @@ export default function AccordionTable({ leads, manifest }: Props) {
         ) : (
           <div className="divide-y divide-[#f0f0f0]">
             {filtered.map((lead, idx) => (
-              <div key={lead.id}>
+              <div key={lead.id} ref={(el) => { rowRefs.current[lead.id] = el }}>
                 <LeadRow
                   lead={lead}
                   isOpen={openId === lead.id}
