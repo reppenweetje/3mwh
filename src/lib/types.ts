@@ -13,7 +13,5 @@ export interface Lead {
   naam: string
   email: string
   ingediendOp: string
-  documentsBundleUrl?: string
-  documentsBundleType?: 'zip' | 'folder'
   antwoorden: AnswerItem[]
 }

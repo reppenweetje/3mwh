@@ -5,9 +5,10 @@ import DocumentsButton from './DocumentsButton'
 
 interface Props {
   lead: Lead
+  hasDocument: boolean
 }
 
-export default function LeadExpandedPanel({ lead }: Props) {
+export default function LeadExpandedPanel({ lead, hasDocument }: Props) {
   const grouped = CATEGORY_ORDER.map((cat) => ({
     category: cat,
     items: lead.antwoorden.filter((a) => a.category === cat),
@@ -43,10 +44,10 @@ export default function LeadExpandedPanel({ lead }: Props) {
           </div>
         </div>
 
-        {lead.documentsBundleUrl ? (
-          <DocumentsButton url={lead.documentsBundleUrl} type={lead.documentsBundleType ?? 'folder'} />
+        {hasDocument ? (
+          <DocumentsButton leadId={lead.id} />
         ) : (
-          <span className="text-xs text-[#c8c8c8] italic">Documenten nog niet beschikbaar</span>
+          <span className="text-xs text-[#c8c8c8] italic font-medium">Documenten nog niet beschikbaar</span>
         )}
       </div>
 

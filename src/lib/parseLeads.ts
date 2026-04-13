@@ -76,8 +76,6 @@ export function parseLeads(): Lead[] {
   const naamCol = findHeader('Naam') ?? ''
   const emailCol = findHeader('email') ?? ''
   const ingediendCol = findHeader('Ingediend op') ?? ''
-  const bundleUrlCol = findHeader('Documents Bundle URL') ?? findHeader('Bundle URL') ?? ''
-
   const leads: Lead[] = []
 
   for (let i = 0; i < rows.length; i++) {
@@ -118,8 +116,6 @@ export function parseLeads(): Lead[] {
     const ingediendRaw = row[ingediendCol]
     const ingediendOp = formatDate(ingediendRaw)
 
-    const bundleUrl = bundleUrlCol ? String(row[bundleUrlCol] ?? '').trim() : ''
-
     leads.push({
       id: String(i + 1),
       bedrijf,
@@ -127,7 +123,6 @@ export function parseLeads(): Lead[] {
       naam: String(row[naamCol] ?? '').trim(),
       email: String(row[emailCol] ?? '').trim(),
       ingediendOp,
-      documentsBundleUrl: bundleUrl || undefined,
       antwoorden,
     })
   }

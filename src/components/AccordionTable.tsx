@@ -8,20 +8,15 @@ import SearchFilterBar from './SearchFilterBar'
 
 interface Props {
   leads: Lead[]
+  manifest: Record<string, string>
 }
 
-export default function AccordionTable({ leads }: Props) {
+export default function AccordionTable({ leads, manifest }: Props) {
   const [openId, setOpenId] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState<'score' | 'date'>('score')
 
   const filtered = useMemo(() => {
     let result = [...leads]
-
-    if (search.trim()) {
-      const q = search.trim().toLowerCase()
-      result = result.filter((l) => l.bedrijf.toLowerCase().includes(q))
-    }
 
     if (sortBy === 'score') {
       result.sort((a, b) => b.score - a.score)
@@ -34,7 +29,7 @@ export default function AccordionTable({ leads }: Props) {
     }
 
     return result
-  }, [leads, search, sortBy])
+  }, [leads, sortBy])
 
   function toggle(id: string) {
     setOpenId((prev) => (prev === id ? null : id))
@@ -43,12 +38,9 @@ export default function AccordionTable({ leads }: Props) {
   return (
     <div>
       <SearchFilterBar
-        search={search}
-        onSearch={setSearch}
         sortBy={sortBy}
         onSort={setSortBy}
-        total={leads.length}
-        filtered={filtered.length}
+        total={filtered.length}
       />
 
       <div className="border border-[#e8e8e8] rounded-xl overflow-hidden">
@@ -65,7 +57,7 @@ export default function AccordionTable({ leads }: Props) {
 
         {filtered.length === 0 ? (
           <div className="px-8 py-16 text-center">
-            <p className="text-sm text-[#c0c0c0] font-medium">Geen resultaten voor &ldquo;{search}&rdquo;</p>
+            <p className="text-sm text-[#c0c0c0] font-medium">Geen inschrijvingen gevonden.</p>
           </div>
         ) : (
           <div className="divide-y divide-[#f0f0f0]">
@@ -77,7 +69,9 @@ export default function AccordionTable({ leads }: Props) {
                   onToggle={() => toggle(lead.id)}
                   rank={idx + 1}
                 />
-                {openId === lead.id && <LeadExpandedPanel lead={lead} />}
+                {openId === lead.id && (
+                  <LeadExpandedPanel lead={lead} hasDocument={!!manifest[lead.id]} />
+                )}
               </div>
             ))}
           </div>
