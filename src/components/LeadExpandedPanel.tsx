@@ -1,5 +1,6 @@
 import { Lead } from '@/lib/types'
 import { CATEGORY_ORDER } from '@/lib/questionMap'
+import { getSummary } from '@/lib/summaries'
 import AnswerSection from './AnswerSection'
 import DocumentsButton from './DocumentsButton'
 
@@ -13,6 +14,8 @@ export default function LeadExpandedPanel({ lead, hasDocument }: Props) {
     category: cat,
     items: lead.antwoorden.filter((a) => a.category === cat),
   })).filter((g) => g.items.length > 0)
+
+  const summary = getSummary(lead.bedrijf)
 
   return (
     <div className="bg-[#f5f6ff] border-t border-[#e0e2f0]">
@@ -50,6 +53,14 @@ export default function LeadExpandedPanel({ lead, hasDocument }: Props) {
           <span className="text-xs text-[#c8c8c8] italic font-medium">Documenten nog niet beschikbaar</span>
         )}
       </div>
+
+      {/* Samenvatting */}
+      {summary && (
+        <div className="px-8 py-5 border-b border-[#e0e2f0]">
+          <p className="text-[10px] font-bold text-[#b0b0b0] uppercase tracking-widest mb-2">Samenvatting</p>
+          <p className="text-sm text-[#4a4a4a] leading-relaxed max-w-4xl">{summary}</p>
+        </div>
+      )}
 
       {/* Antwoorden */}
       <div className="px-8 py-6">
