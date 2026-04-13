@@ -20,9 +20,9 @@ export default async function HomePage() {
       <header className="border-b border-[#e8e8e8] bg-white sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-[5px]">
-              <div className="w-4 h-4 bg-[#0f0f70] rotate-45" />
-              <div className="w-2.5 h-2.5 bg-[#0f0f70] rotate-45" />
+            <div className="flex items-center gap-1.5">
+              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
+              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
               <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
             </div>
             <div className="w-px h-5 bg-[#e8e8e8]" />
