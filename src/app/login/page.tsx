@@ -44,9 +44,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <div className="w-3.5 h-3.5 bg-white rotate-45" />
-            <div className="w-3.5 h-3.5 bg-white rotate-45" />
-            <div className="w-3.5 h-3.5 bg-white rotate-45" />
+            <div className="w-4 h-4 bg-white rotate-45" />
+            <div className="w-2.5 h-2.5 bg-white rotate-45" />
+            <div className="w-5 h-5 bg-white rotate-45" />
           </div>
           <span className="text-2xl font-bold text-white tracking-tight">repp</span>
         </div>

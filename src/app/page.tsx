@@ -21,9 +21,9 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
-              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
-              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
+              <div className="w-4 h-4 bg-[#0f0f70] rotate-45" />
+              <div className="w-2.5 h-2.5 bg-[#0f0f70] rotate-45" />
+              <div className="w-5 h-5 bg-[#0f0f70] rotate-45" />
             </div>
             <div className="w-px h-5 bg-[#e8e8e8]" />
             <span className="text-xs font-semibold text-[#9a9898] uppercase tracking-widest">
