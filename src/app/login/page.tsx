@@ -41,11 +41,6 @@ export default function LoginPage() {
 
       {/* ── Linker brand panel ─────────────────────────────────── */}
       <div className="hidden lg:flex w-1/2 bg-[#0f0f70] flex-col justify-between p-12">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold text-white tracking-tight">repp</span>
-        </div>
-
         {/* Midden tekst */}
         <div>
           <p className="text-xs font-bold text-[#edff00] uppercase tracking-widest mb-4">
@@ -59,12 +54,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Decoratief icoon groot */}
-        <div className="flex items-center gap-2 opacity-10">
-          <div className="w-10 h-10 bg-white rotate-45" />
-          <div className="w-6 h-6 bg-white rotate-45" />
-          <div className="w-8 h-8 bg-white rotate-45" />
-        </div>
+        <div />
       </div>
 
       {/* ── Rechter login panel ────────────────────────────────── */}
