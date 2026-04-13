@@ -4,6 +4,24 @@ import fs from 'fs'
 import { Lead, AnswerItem } from './types'
 import { QUESTION_MAP } from './questionMap'
 
+function formatDate(raw: unknown): string {
+  if (!raw) return ''
+  const str = String(raw).trim()
+  if (!str) return ''
+  // Already a nice date string
+  const d = new Date(str)
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleDateString('nl-NL', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+  return str
+}
+
 function normalise(str: unknown): string {
   if (str == null) return ''
   return String(str)
@@ -15,9 +33,12 @@ function normalise(str: unknown): string {
 
 function matchQuestion(header: string) {
   const clean = normalise(header).toLowerCase()
-  return QUESTION_MAP.find((q) =>
+  const candidates = QUESTION_MAP.filter((q) =>
     clean.includes(q.match.toLowerCase())
   )
+  if (candidates.length === 0) return undefined
+  // Prefer the most specific (longest) match to avoid false positives
+  return candidates.reduce((a, b) => a.match.length >= b.match.length ? a : b)
 }
 
 export function parseLeads(): Lead[] {
@@ -95,7 +116,7 @@ export function parseLeads(): Lead[] {
     }))
 
     const ingediendRaw = row[ingediendCol]
-    const ingediendOp = ingediendRaw ? String(ingediendRaw).trim() : ''
+    const ingediendOp = formatDate(ingediendRaw)
 
     const bundleUrl = bundleUrlCol ? String(row[bundleUrlCol] ?? '').trim() : ''
 

@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+
 export default function LoginPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -47,7 +48,7 @@ export default function LoginPage() {
             <div className="w-2.5 h-2.5 bg-white rotate-45" />
             <div className="w-3.5 h-3.5 bg-white rotate-45" />
           </div>
-          <span className="font-wordmark text-2xl font-bold text-white tracking-tight">repp</span>
+          <span className="text-2xl font-bold text-white tracking-tight">repp</span>
         </div>
 
         {/* Midden tekst */}
@@ -56,7 +57,7 @@ export default function LoginPage() {
             Inschrijvingen dashboard
           </p>
           <h2 className="text-4xl font-black text-white leading-tight tracking-tight mb-4">
-            3e Merwede<br />haven
+            3e Merwedehaven
           </h2>
           <p className="text-sm text-[#ffffff55] leading-relaxed max-w-xs">
             Beveiligde omgeving voor het bekijken en beoordelen van alle ingediende inschrijvingen.
@@ -82,7 +83,7 @@ export default function LoginPage() {
               <div className="w-2 h-2 bg-[#0f0f70] rotate-45" />
               <div className="w-3 h-3 bg-[#0f0f70] rotate-45" />
             </div>
-            <span className="font-wordmark text-xl font-bold text-[#0f0f70]">repp</span>
+            <span className="text-xl font-bold text-[#0f0f70]">repp</span>
           </div>
 
           <p className="text-xs font-bold text-[#1b23aa] uppercase tracking-widest mb-1">3e Merwedehaven</p>

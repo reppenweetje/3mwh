@@ -6,7 +6,6 @@
   --neon: #edff00;
   --gray-light: #d8d6d6;
   --gray-mid: #9a9898;
-  --gray-dark: #4a4a4a;
 }
 
 * {
@@ -19,10 +18,6 @@ body {
   font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.font-wordmark {
-  font-family: var(--font-playfair), Georgia, serif;
 }
 
 ::selection {

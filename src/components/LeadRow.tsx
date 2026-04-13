@@ -29,20 +29,15 @@ function ScoreBadge({ score }: { score: number }) {
   )
 }
 
-function formatDate(raw: string): { date: string; time: string } {
-  if (!raw) return { date: '—', time: '' }
-  const d = new Date(raw)
-  if (isNaN(d.getTime())) {
-    const parts = raw.split(' ')
-    return { date: parts[0] ?? raw, time: parts[1] ?? '' }
-  }
-  const date = d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
-  const time = d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
-  return { date, time }
+function splitDateTime(str: string): { date: string; time: string } {
+  if (!str) return { date: '—', time: '' }
+  // Format from parseLeads is "10 apr. 2026 om 13:33" or similar
+  const parts = str.split(' om ')
+  return { date: parts[0] ?? str, time: parts[1] ?? '' }
 }
 
 export default function LeadRow({ lead, isOpen, onToggle, rank }: Props) {
-  const { date, time } = formatDate(lead.ingediendOp)
+  const { date, time } = splitDateTime(lead.ingediendOp)
 
   return (
     <div
