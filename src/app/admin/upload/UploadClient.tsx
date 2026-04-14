@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { upload } from '@vercel/blob/client'
 
 interface Lead { id: string; bedrijf: string }
 interface Props { leads: Lead[] }
@@ -31,22 +32,18 @@ export default function UploadClient({ leads }: Props) {
     setUploading(true)
     setMessage(null)
     try {
-      const form = new FormData()
-      form.append('leadId', selectedLeadId)
-      form.append('file', file)
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: form })
-      const data = await res.json()
-      if (res.ok) {
-        setMessage({ type: 'ok', text: `Geüpload voor: ${leads.find(l => l.id === selectedLeadId)?.bedrijf}` })
-        setFile(null)
-        setSelectedLeadId('')
-        if (fileRef.current) fileRef.current.value = ''
-        await loadManifest()
-      } else {
-        setMessage({ type: 'err', text: data.error ?? 'Upload mislukt' })
-      }
-    } catch {
-      setMessage({ type: 'err', text: 'Er is een fout opgetreden.' })
+      await upload(`docs/lead-${selectedLeadId}-${file.name}`, file, {
+        access: 'public',
+        handleUploadUrl: '/api/admin/upload',
+        clientPayload: JSON.stringify({ leadId: selectedLeadId }),
+      })
+      setMessage({ type: 'ok', text: `Geüpload voor: ${leads.find(l => l.id === selectedLeadId)?.bedrijf}` })
+      setFile(null)
+      setSelectedLeadId('')
+      if (fileRef.current) fileRef.current.value = ''
+      await loadManifest()
+    } catch (err) {
+      setMessage({ type: 'err', text: err instanceof Error ? err.message : 'Er is een fout opgetreden.' })
     } finally {
       setUploading(false)
     }

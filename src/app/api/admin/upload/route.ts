@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
+import { handleUpload, type HandleUploadBody } from '@vercel/blob'
 import { setDocumentUrl } from '@/lib/manifest'
 import { COOKIE_NAME } from '@/lib/auth'
 import { jwtVerify } from 'jose'
@@ -20,39 +20,34 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!(await isAuthenticated(request))) {
     return NextResponse.json({ error: 'Niet ingelogd' }, { status: 401 })
   }
 
-  const formData = await request.formData().catch(() => null)
-  if (!formData) {
-    return NextResponse.json({ error: 'Ongeldig verzoek' }, { status: 400 })
-  }
+  const body = (await request.json()) as HandleUploadBody
 
-  const leadId = formData.get('leadId')
-  const file = formData.get('file')
-
-  if (!leadId || typeof leadId !== 'string') {
-    return NextResponse.json({ error: 'leadId ontbreekt' }, { status: 400 })
-  }
-
-  if (!file || !(file instanceof Blob)) {
-    return NextResponse.json({ error: 'Bestand ontbreekt' }, { status: 400 })
-  }
-
-  const filename = file instanceof File ? file.name : `lead-${leadId}.zip`
-
-  if (!filename.endsWith('.zip')) {
-    return NextResponse.json({ error: 'Alleen ZIP-bestanden zijn toegestaan' }, { status: 400 })
-  }
-
-  const blob = await put(`docs/lead-${leadId}-${filename}`, file, {
-    access: 'public',
-    allowOverwrite: true,
+  const jsonResponse = await handleUpload({
+    body,
+    request,
+    onBeforeGenerateToken: async (_pathname, clientPayload) => {
+      return {
+        allowedContentTypes: [
+          'application/zip',
+          'application/x-zip-compressed',
+          'application/octet-stream',
+        ],
+        maximumSizeInBytes: 100 * 1024 * 1024,
+        tokenPayload: clientPayload ?? '',
+      }
+    },
+    onUploadCompleted: async ({ blob, tokenPayload }) => {
+      const { leadId } = JSON.parse(tokenPayload ?? '{}')
+      if (leadId) {
+        await setDocumentUrl(leadId, blob.url)
+      }
+    },
   })
 
-  await setDocumentUrl(leadId, blob.url)
-
-  return NextResponse.json({ ok: true, url: blob.url })
+  return NextResponse.json(jsonResponse)
 }
