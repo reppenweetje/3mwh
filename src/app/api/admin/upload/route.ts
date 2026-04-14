@@ -38,7 +38,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
       const { key, uploadId } = await createMultipartUpload(
         `docs/lead-${leadId}-${filename}`,
-        { access: 'public', contentType: 'application/zip' }
+        { access: 'private', contentType: 'application/zip' }
       )
       return NextResponse.json({ key, uploadId })
     }
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ error: 'Ontbrekende velden voor part upload' }, { status: 400 })
       }
       const buffer = Buffer.from(data, 'base64')
-      const part = await uploadPart(key, buffer, { key, uploadId, partNumber, access: 'public' })
+      const part = await uploadPart(key, buffer, { key, uploadId, partNumber, access: 'private' })
       return NextResponse.json({ etag: part.etag })
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (!key || !uploadId || !parts || !leadId) {
         return NextResponse.json({ error: 'Ontbrekende velden voor complete' }, { status: 400 })
       }
-      const blob = await completeMultipartUpload(key, parts, { key, uploadId, access: 'public' })
+      const blob = await completeMultipartUpload(key, parts, { key, uploadId, access: 'private' })
       await setDocumentUrl(leadId, blob.url)
       return NextResponse.json({ ok: true, url: blob.url })
     }
