@@ -52,7 +52,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
             Inschrijvingen
           </h1>
-          <p className="text-sm text-[#ffffff66] leading-relaxed">
+          <p className="text-sm text-[#ffffffbb] leading-relaxed">
             Digitaal portaal voor de verwerking en resultaten van ingediende inschrijvingen.
           </p>
         </div>
