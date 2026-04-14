@@ -40,11 +40,15 @@ export default function UploadClient({ leads }: Props) {
       })
 
       // Sla URL direct op — niet wachten op async webhook
-      await fetch('/api/admin/upload', {
+      const saveRes = await fetch('/api/admin/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'blob.save-url', leadId: selectedLeadId, url: blob.url }),
       })
+      if (!saveRes.ok) {
+        const { error } = await saveRes.json().catch(() => ({ error: 'Opslaan mislukt' }))
+        throw new Error(error ?? 'Opslaan van document mislukt')
+      }
 
       setMessage({ type: 'ok', text: `Geüpload voor: ${leads.find(l => l.id === selectedLeadId)?.bedrijf}` })
       setFile(null)

@@ -54,8 +54,8 @@ export default function AccordionTable({ leads, manifest }: Props) {
       />
 
       <div className="border border-[#e8e8e8] rounded-xl overflow-hidden">
-        {/* Tabelheader */}
-        <div className="grid grid-cols-[2.5rem_1fr_4.5rem_1fr_1fr_6.5rem_2.5rem] gap-4 items-center px-8 py-3 bg-[#f7f7f7] border-b border-[#e8e8e8]">
+        {/* Tabelheader — desktop */}
+        <div className="hidden lg:grid grid-cols-[2.5rem_1fr_4.5rem_1fr_1fr_6.5rem_2.5rem] gap-4 items-center px-8 py-3 bg-[#f7f7f7] border-b border-[#e8e8e8]">
           <span />
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Bedrijf</span>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Score</span>
@@ -63,6 +63,22 @@ export default function AccordionTable({ leads, manifest }: Props) {
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">E-mail</span>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Ingediend</span>
           <span />
+        </div>
+        {/* Tabelheader — tablet */}
+        <div className="hidden sm:grid lg:hidden grid-cols-[2rem_1fr_4rem_1fr_4rem_2rem] gap-3 items-center px-6 py-3 bg-[#f7f7f7] border-b border-[#e8e8e8]">
+          <span />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Bedrijf</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Score</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Contact</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Datum</span>
+          <span />
+        </div>
+        {/* Tabelheader — mobile */}
+        <div className="sm:hidden flex items-center gap-3 px-4 py-3 bg-[#f7f7f7] border-b border-[#e8e8e8]">
+          <span className="w-5" />
+          <span className="flex-1 text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Bedrijf</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#b0b0b0]">Score</span>
+          <span className="w-3.5" />
         </div>
 
         {filtered.length === 0 ? (

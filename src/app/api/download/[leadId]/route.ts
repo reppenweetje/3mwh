@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { head } from '@vercel/blob'
 import { getManifest } from '@/lib/manifest'
 import { COOKIE_NAME } from '@/lib/auth'
 import { jwtVerify } from 'jose'
@@ -24,7 +25,7 @@ export async function GET(
   { params }: { params: Promise<{ leadId: string }> }
 ) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.json({ error: 'Niet ingelogd' }, { status: 401 })
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
   const { leadId } = await params
@@ -39,21 +40,27 @@ export async function GET(
     return NextResponse.json({ error: 'Geen document gevonden voor deze lead' }, { status: 404 })
   }
 
-  // Fetch the blob server-side and stream it — URL is never exposed to browser
-  const blobRes = await fetch(blobUrl)
-  if (!blobRes.ok) {
-    return NextResponse.json({ error: 'Document niet beschikbaar' }, { status: 502 })
+  try {
+    // Haal signed downloadUrl op — nodig voor private blobs
+    const blobInfo = await head(blobUrl)
+    const blobRes = await fetch(blobInfo.downloadUrl)
+
+    if (!blobRes.ok) {
+      return NextResponse.json({ error: 'Document niet beschikbaar' }, { status: 502 })
+    }
+
+    const filename = blobInfo.pathname.split('/').pop() ?? `lead-${leadId}.zip`
+    const contentLength = blobRes.headers.get('content-length')
+
+    const headers = new Headers({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'no-store',
+    })
+    if (contentLength) headers.set('Content-Length', contentLength)
+
+    return new NextResponse(blobRes.body, { status: 200, headers })
+  } catch {
+    return NextResponse.json({ error: 'Fout bij ophalen document' }, { status: 500 })
   }
-
-  const filename = blobUrl.split('/').pop() ?? `lead-${leadId}.zip`
-  const contentLength = blobRes.headers.get('content-length')
-
-  const headers = new Headers({
-    'Content-Type': 'application/zip',
-    'Content-Disposition': `attachment; filename="${filename}"`,
-    'Cache-Control': 'no-store',
-  })
-  if (contentLength) headers.set('Content-Length', contentLength)
-
-  return new NextResponse(blobRes.body, { status: 200, headers })
 }
