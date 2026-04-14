@@ -61,16 +61,6 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-8 py-12">
         <div className="w-full max-w-sm">
 
-          {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <div className="flex items-center gap-[4px]">
-              <div className="w-3.5 h-3.5 bg-[#0f0f70] rotate-45" />
-              <div className="w-2 h-2 bg-[#0f0f70] rotate-45" />
-              <div className="w-3 h-3 bg-[#0f0f70] rotate-45" />
-            </div>
-            <span className="text-xl font-bold text-[#0f0f70]">repp</span>
-          </div>
-
           <p className="text-xs font-bold text-[#1b23aa] uppercase tracking-widest mb-1">3e Merwedehaven</p>
           <h1 className="text-2xl font-black text-[#0f0f70] mb-1 tracking-tight">Inloggen</h1>
           <p className="text-sm text-[#9a9898] mb-8">Vul je gegevens in om verder te gaan.</p>
