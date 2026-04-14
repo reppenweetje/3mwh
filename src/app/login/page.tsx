@@ -44,26 +44,24 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white flex">
+    <main className="min-h-screen bg-[#f0f0f5] flex items-center justify-center p-6">
+      <div className="w-full max-w-sm shadow-xl rounded-2xl overflow-hidden">
 
-      {/* ── Linker brand panel ─────────────────────────────────── */}
-      <div className="hidden lg:flex w-1/2 bg-[#0f0f70] flex-col justify-between p-12">
-        <div>
+        {/* ── Blauwe banner ──────────────────────────────────── */}
+        <div className="bg-[#0f0f70] px-8 pt-8 pb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/repp-logo.svg" alt="REPP" className="w-24 mb-12 opacity-90" />
-          <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">
+          <img src="/repp-icon.png" alt="REPP" className="h-8 mb-6 opacity-90" />
+          <h1 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
             Inschrijvingen
-          </h2>
-          <p className="text-sm text-[#ffffff66] leading-relaxed max-w-xs">
+          </h1>
+          <p className="text-sm text-[#ffffff66] leading-relaxed">
             Digitaal portaal voor de verwerking en resultaten van ingediende inschrijvingen.
           </p>
         </div>
-        <div />
-      </div>
 
-      {/* ── Rechter login panel ────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center px-8 py-12">
-        <div className="w-full max-w-sm">
+        {/* ── Formulier ──────────────────────────────────────── */}
+        <div className="bg-white px-8 py-8">
+          <div className="w-full max-w-sm">
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -125,6 +123,7 @@ export default function LoginPage() {
             </button>
           </form>
 
+        </div>
         </div>
       </div>
     </main>
