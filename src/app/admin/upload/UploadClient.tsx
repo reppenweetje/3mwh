@@ -50,7 +50,10 @@ export default function UploadClient({ leads }: Props) {
       for (let i = 0; i < totalParts; i++) {
         const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE)
         const buffer = await chunk.arrayBuffer()
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        const bytes = new Uint8Array(buffer)
+        let binary = ''
+        for (let j = 0; j < bytes.byteLength; j++) binary += String.fromCharCode(bytes[j])
+        const base64 = btoa(binary)
 
         const partRes = await fetch('/api/admin/upload', {
           method: 'POST',
