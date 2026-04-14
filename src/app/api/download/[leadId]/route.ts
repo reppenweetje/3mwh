@@ -21,6 +21,10 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 // "10 apr. 2026 om 13:33" → "10 apr 2026"
 function extractDate(str: string): string {
   const MONTHS: Record<string, string> = {
@@ -65,28 +69,33 @@ export async function GET(
     const original = new AdmZip(filePath)
     const entries = original.getEntries()
 
-    // Bepaal of er een gemeenschappelijke root-map is
-    const topLevelNames = new Set(
-      entries.map((e) => e.entryName.split('/')[0]).filter(Boolean)
+    // Gooi __MACOSX (macOS metadata) weg en sla alleen echte bestanden op
+    const realEntries = entries.filter(
+      (e) => !e.entryName.startsWith('__MACOSX/') && !e.entryName.startsWith('.')
     )
-    const hasSingleRoot =
-      topLevelNames.size === 1 &&
-      entries.some((e) => e.isDirectory && e.entryName.split('/').length === 2)
+
+    // Bepaal of er een gemeenschappelijke root-map is (buiten __MACOSX)
+    const topLevelNames = new Set(
+      realEntries.map((e) => e.entryName.split('/')[0]).filter(Boolean)
+    )
+    const hasSingleRoot = topLevelNames.size === 1
 
     // Bouw nieuwe ZIP met correcte mapnaam
     const newZip = new AdmZip()
 
-    for (const entry of entries) {
+    for (const entry of realEntries) {
       if (entry.isDirectory) continue
 
       let relativePath = entry.entryName
       if (hasSingleRoot) {
-        // Strip de bestaande root-mapnaam
+        // Strip de bestaande root-mapnaam (bijv. "Jan/")
         const oldRoot = [...topLevelNames][0]
-        relativePath = relativePath.replace(new RegExp(`^${oldRoot}/`), '')
+        relativePath = relativePath.replace(new RegExp(`^${escapeRegex(oldRoot)}/`), '')
       }
 
-      newZip.addFile(`${folderName}/${relativePath}`, entry.getData())
+      if (relativePath) {
+        newZip.addFile(`${folderName}/${relativePath}`, entry.getData())
+      }
     }
 
     const buffer = newZip.toBuffer()
