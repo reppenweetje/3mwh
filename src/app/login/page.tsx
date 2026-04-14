@@ -53,8 +53,11 @@ export default function LoginPage() {
           <p className="text-xs font-bold text-[#edff00] uppercase tracking-widest mb-4">
             Inschrijvingen dashboard
           </p>
+          <h2 className="text-4xl font-black text-white leading-tight tracking-tight mb-4">
+            Didam
+          </h2>
           <p className="text-sm text-[#ffffff55] leading-relaxed max-w-xs">
-            Beveiligde omgeving voor het bekijken en beoordelen van alle ingediende inschrijvingen.
+            Digitaal portaal voor inschrijvingen op gemeentelijke kavels. Hier beoordeelt de gemeente alle ingediende inzendingen voor kaveluitgifte in Didam.
           </p>
         </div>
 
