@@ -46,6 +46,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           'application/octet-stream',
         ],
         maximumSizeInBytes: 500 * 1024 * 1024,
+        allowOverwrite: true,
         tokenPayload: clientPayload,
       }),
       onUploadCompleted: async ({ blob, tokenPayload }) => {
