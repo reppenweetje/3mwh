@@ -118,9 +118,9 @@ export function parseLeads(): Lead[] {
 
     leads.push({
       id: String(i + 1),
-      bedrijf,
+      bedrijf: bedrijf.replace(/&/g, 'en'),
       score,
-      naam: String(row[naamCol] ?? '').trim(),
+      naam: String(row[naamCol] ?? '').trim().replace(/&/g, 'en'),
       email: String(row[emailCol] ?? '').trim(),
       ingediendOp,
       antwoorden,
