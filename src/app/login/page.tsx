@@ -48,19 +48,7 @@ export default function LoginPage() {
 
       {/* ── Linker brand panel ─────────────────────────────────── */}
       <div className="hidden lg:flex w-1/2 bg-[#0f0f70] flex-col justify-between p-12">
-        {/* Midden tekst */}
-        <div>
-          <p className="text-xs font-bold text-[#edff00] uppercase tracking-widest mb-4">
-            Inschrijvingen dashboard
-          </p>
-          <h2 className="text-4xl font-black text-white leading-tight tracking-tight mb-4">
-            Didam
-          </h2>
-          <p className="text-sm text-[#ffffff55] leading-relaxed max-w-xs">
-            Digitaal portaal voor inschrijvingen op gemeentelijke kavels. Hier beoordeelt de gemeente alle ingediende inzendingen voor kaveluitgifte in Didam.
-          </p>
-        </div>
-
+        <div />
         <div />
       </div>
 
@@ -131,9 +119,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-[#d8d6d6] mt-10 font-medium uppercase tracking-widest">
-            Alleen voor intern gebruik
-          </p>
         </div>
       </div>
     </main>
