@@ -34,17 +34,17 @@ export default function AnswerSection({ category, items }: Props) {
 
       <div className="divide-y divide-[#f0f0f0]">
         {items.map((item) => (
-          <div key={item.code} className="py-2.5 flex items-start justify-between gap-6">
+          <div key={item.code} className="py-2.5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-6">
             <div className="flex items-start gap-3 min-w-0">
               <span className="text-[11px] font-bold font-mono text-[#c8c8c8] mt-0.5 shrink-0 w-6 tabular-nums">
                 {item.code}
               </span>
               <span className="text-xs text-[#9a9898] leading-relaxed font-medium">{item.title}</span>
             </div>
-            <div className="text-right shrink-0">
+            <div className="pl-9 sm:pl-0 sm:text-right sm:shrink-0 sm:max-w-[55%]">
               <AnswerPill answer={item.answer} />
               {item.bewijsstuk && item.bewijsstuk !== item.answer && (
-                <p className="text-[11px] text-[#c0c0c0] mt-0.5 font-medium">
+                <p className="text-[11px] text-[#c0c0c0] mt-0.5 font-medium break-words">
                   bewijs: {item.bewijsstuk}
                 </p>
               )}

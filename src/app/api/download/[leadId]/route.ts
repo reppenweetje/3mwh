@@ -3,6 +3,7 @@ import fs from 'fs'
 import { COOKIE_NAME } from '@/lib/auth'
 import { jwtVerify } from 'jose'
 import { docExists, docPath } from '@/lib/getDocs'
+import { parseLeads } from '@/lib/parseLeads'
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET ?? 'fallback-dev-secret-change-in-production'
@@ -39,6 +40,15 @@ export async function GET(
 
   const filePath = docPath(leadId)
 
+  // Bouw bestandsnaam: "{Bedrijf} - {datum}.zip"
+  const leads = parseLeads()
+  const lead = leads.find((l) => l.id === leadId)
+  const rawDate = lead?.ingediendOp?.split(',')[0]?.trim() ?? ''
+  const safeName = `${lead?.bedrijf ?? `lead-${leadId}`}${rawDate ? ` - ${rawDate}` : ''}`
+    .replace(/[/\\:*?"<>|]/g, '')
+    .trim()
+  const filename = `${safeName}.zip`
+
   try {
     const stat = fs.statSync(filePath)
     const nodeStream = fs.createReadStream(filePath)
@@ -60,7 +70,7 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="lead-${leadId}.zip"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
         'Content-Length': stat.size.toString(),
         'Cache-Control': 'no-store',
       },
