@@ -28,6 +28,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const body = (await request.json()) as HandleUploadBody
 
+    // Directe manifest-opslag (client stuurt url + leadId na upload)
+    if ((body as { type: string }).type === 'blob.save-url') {
+      const { leadId, url } = body as unknown as { type: string; leadId: string; url: string }
+      if (!leadId || !url) return NextResponse.json({ error: 'leadId en url zijn verplicht' }, { status: 400 })
+      await setDocumentUrl(leadId, url)
+      return NextResponse.json({ ok: true })
+    }
+
     const result = await handleUpload({
       body,
       request,

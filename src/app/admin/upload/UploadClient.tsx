@@ -32,12 +32,20 @@ export default function UploadClient({ leads }: Props) {
     setUploading(true)
     setMessage(null)
     try {
-      await upload(`docs/lead-${selectedLeadId}-${file.name}`, file, {
+      const blob = await upload(`docs/lead-${selectedLeadId}-${file.name}`, file, {
         access: 'private',
         multipart: true,
         handleUploadUrl: '/api/admin/upload',
         clientPayload: JSON.stringify({ leadId: selectedLeadId }),
       })
+
+      // Sla URL direct op — niet wachten op async webhook
+      await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'blob.save-url', leadId: selectedLeadId, url: blob.url }),
+      })
+
       setMessage({ type: 'ok', text: `Geüpload voor: ${leads.find(l => l.id === selectedLeadId)?.bedrijf}` })
       setFile(null)
       setSelectedLeadId('')
