@@ -82,7 +82,7 @@ export default function LoginPage() {
                 onChange={(e) => setProject(e.target.value)}
                 required
                 className="w-full px-4 py-3 bg-white border border-[#d8d6d6] text-[#0f0f70] placeholder-[#d8d6d6] focus:outline-none focus:border-[#1b23aa] focus:ring-2 focus:ring-[#1b23aa]/10 transition-colors text-sm font-medium rounded-lg"
-                placeholder="3e merwedehaven"
+                placeholder="project"
               />
             </div>
 
