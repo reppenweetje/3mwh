@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -50,7 +49,6 @@ export default function LoginPage() {
 
         {/* ── Blauwe banner ──────────────────────────────────── */}
         <div className="bg-[#0f0f70] px-8 pt-8 pb-8">
-          <Image src="/logo.png" alt="REPP" width={100} height={34} className="mb-6" />
           <h1 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
             Inschrijvingen
           </h1>
