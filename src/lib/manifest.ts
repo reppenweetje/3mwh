@@ -4,10 +4,11 @@ export type Manifest = Record<string, string>
 
 const MANIFEST_FILENAME = 'mwh-manifest.json'
 
-async function findManifestUrl(): Promise<string | null> {
+async function findManifestDownloadUrl(): Promise<string | null> {
   try {
     const { blobs } = await list({ prefix: MANIFEST_FILENAME })
-    return blobs[0]?.url ?? null
+    // downloadUrl is een signed URL die werkt voor private stores
+    return blobs[0]?.downloadUrl ?? null
   } catch {
     return null
   }
@@ -15,7 +16,7 @@ async function findManifestUrl(): Promise<string | null> {
 
 export async function getManifest(): Promise<Manifest> {
   try {
-    const url = await findManifestUrl()
+    const url = await findManifestDownloadUrl()
     if (!url) return {}
     const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) return {}
@@ -27,7 +28,7 @@ export async function getManifest(): Promise<Manifest> {
 
 export async function saveManifest(manifest: Manifest): Promise<void> {
   await put(MANIFEST_FILENAME, JSON.stringify(manifest), {
-    access: 'public',
+    access: 'private',
     contentType: 'application/json',
     allowOverwrite: true,
   })
