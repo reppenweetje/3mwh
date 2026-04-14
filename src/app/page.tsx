@@ -23,18 +23,6 @@ export default async function HomePage() {
             3e Merwedehaven
           </span>
           <div className="flex items-center gap-3 sm:gap-6 shrink-0">
-            <a
-              href="/admin/upload"
-              className="text-[10px] font-bold text-[#9a9898] hover:text-[#0f0f70] uppercase tracking-widest transition-colors hidden sm:block"
-            >
-              Documenten beheren
-            </a>
-            <a
-              href="/admin/upload"
-              className="text-[10px] font-bold text-[#9a9898] hover:text-[#0f0f70] uppercase tracking-widest transition-colors sm:hidden"
-            >
-              Docs
-            </a>
             <LogoutButton />
           </div>
         </div>
