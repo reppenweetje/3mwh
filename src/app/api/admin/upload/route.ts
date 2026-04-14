@@ -60,7 +60,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!key || !uploadId || !parts || !leadId) {
       return NextResponse.json({ error: 'Ontbrekende velden voor complete' }, { status: 400 })
     }
-    const blob = await completeMultipartUpload(key, parts, { uploadId })
+    const blob = await completeMultipartUpload(key, parts, { key, uploadId, access: 'public' })
     await setDocumentUrl(leadId, blob.url)
     return NextResponse.json({ ok: true, url: blob.url })
   }
