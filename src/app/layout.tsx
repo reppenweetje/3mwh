@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: '3e Merwedehaven — REPP',
   description: 'Inschrijvingen 3e Merwedehaven — intern gebruik',
   robots: 'noindex, nofollow',
+  icons: {
+    icon: '/repp-icon.png',
+  },
 }
 
 export const viewport: Viewport = {

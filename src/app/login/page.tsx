@@ -68,8 +68,8 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-8 py-12">
         <div className="w-full max-w-sm">
 
-          <h1 className="text-2xl font-black text-[#0f0f70] mb-1 tracking-tight">Inloggen</h1>
-          <p className="text-sm text-[#9a9898] mb-8">Vul je gegevens in om verder te gaan.</p>
+          <h1 className="text-2xl font-black text-[#0f0f70] mb-2 tracking-tight uppercase">Inschrijvingen</h1>
+          <p className="text-sm text-[#9a9898] mb-8">Digitaal portaal voor de verwerking en resultaten van ingediende inschrijvingen.</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
