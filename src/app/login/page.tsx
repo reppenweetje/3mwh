@@ -48,16 +48,22 @@ export default function LoginPage() {
 
       {/* ── Linker brand panel ─────────────────────────────────── */}
       <div className="hidden lg:flex w-1/2 bg-[#0f0f70] flex-col justify-between p-12">
-        <div />
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/repp-logo.svg" alt="REPP" className="w-24 mb-12 opacity-90" />
+          <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">
+            Inschrijvingen
+          </h2>
+          <p className="text-sm text-[#ffffff66] leading-relaxed max-w-xs">
+            Digitaal portaal voor de verwerking en resultaten van ingediende inschrijvingen.
+          </p>
+        </div>
         <div />
       </div>
 
       {/* ── Rechter login panel ────────────────────────────────── */}
       <div className="flex-1 flex items-center justify-center px-8 py-12">
         <div className="w-full max-w-sm">
-
-          <h1 className="text-2xl font-black text-[#0f0f70] mb-2 tracking-tight uppercase">Inschrijvingen</h1>
-          <p className="text-sm text-[#9a9898] mb-8">Digitaal portaal voor de verwerking en resultaten van ingediende inschrijvingen.</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
