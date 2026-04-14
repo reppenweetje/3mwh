@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
+import AdmZip from 'adm-zip'
 import { COOKIE_NAME } from '@/lib/auth'
 import { jwtVerify } from 'jose'
 import { docExists, docPath } from '@/lib/getDocs'
@@ -21,6 +21,18 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
+// "10 apr. 2026 om 13:33" → "10 apr 2026"
+function extractDate(str: string): string {
+  const MONTHS: Record<string, string> = {
+    jan: 'jan', feb: 'feb', mrt: 'mrt', apr: 'apr', mei: 'mei', jun: 'jun',
+    jul: 'jul', aug: 'aug', sep: 'sep', okt: 'okt', nov: 'nov', dec: 'dec',
+  }
+  const m = str.match(/(\d{1,2})\s+([a-zA-Z]+)\.?\s+(\d{4})/)
+  if (!m) return ''
+  const month = MONTHS[m[2].toLowerCase()] ?? m[2].toLowerCase()
+  return `${m[1]} ${month} ${m[3]}`
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ leadId: string }> }
@@ -40,54 +52,54 @@ export async function GET(
 
   const filePath = docPath(leadId)
 
-  // Bouw bestandsnaam: "{Bedrijf} - {DD MMM YYYY}.zip"
+  // Bouw mapnaam: "{Bedrijf} - {datum}" (zelfde als ZIP-bestandsnaam)
   const leads = parseLeads()
   const lead = leads.find((l) => l.id === leadId)
-
-  // Extraheer alleen "10 apr 2026" uit strings zoals "10 apr. 2026 om 13:33"
-  function extractDate(str: string): string {
-    const MONTHS: Record<string, string> = {
-      jan: 'jan', feb: 'feb', mrt: 'mrt', apr: 'apr', mei: 'mei', jun: 'jun',
-      jul: 'jul', aug: 'aug', sep: 'sep', okt: 'okt', nov: 'nov', dec: 'dec',
-    }
-    const m = str.match(/(\d{1,2})\s+([a-zA-Z]+)\.?\s+(\d{4})/)
-    if (!m) return ''
-    const month = MONTHS[m[2].toLowerCase()] ?? m[2].toLowerCase()
-    return `${m[1]} ${month} ${m[3]}`
-  }
-
   const cleanDate = lead?.ingediendOp ? extractDate(lead.ingediendOp) : ''
-  const baseName = `${lead?.bedrijf ?? `lead-${leadId}`}${cleanDate ? ` - ${cleanDate}` : ''}`
-    .replace(/[/\\:*?"<>|.]/g, '')
+  const folderName = `${lead?.bedrijf ?? `lead-${leadId}`}${cleanDate ? ` - ${cleanDate}` : ''}`
+    .replace(/[/\\:*?"<>|]/g, '')
     .trim()
 
-  // RFC 6266: ASCII fallback + UTF-8 geëncodeerde naam
-  const asciiName = baseName.replace(/[^\x20-\x7E]/g, '_') + '.zip'
-  const encodedName = encodeURIComponent(baseName + '.zip')
-
   try {
-    const stat = fs.statSync(filePath)
-    const nodeStream = fs.createReadStream(filePath)
+    // Lees originele ZIP
+    const original = new AdmZip(filePath)
+    const entries = original.getEntries()
 
-    const webStream = new ReadableStream({
-      start(controller) {
-        nodeStream.on('data', (chunk) =>
-          controller.enqueue(chunk instanceof Buffer ? chunk : Buffer.from(chunk))
-        )
-        nodeStream.on('end', () => controller.close())
-        nodeStream.on('error', (err) => controller.error(err))
-      },
-      cancel() {
-        nodeStream.destroy()
-      },
-    })
+    // Bepaal of er een gemeenschappelijke root-map is
+    const topLevelNames = new Set(
+      entries.map((e) => e.entryName.split('/')[0]).filter(Boolean)
+    )
+    const hasSingleRoot =
+      topLevelNames.size === 1 &&
+      entries.some((e) => e.isDirectory && e.entryName.split('/').length === 2)
 
-    return new NextResponse(webStream, {
+    // Bouw nieuwe ZIP met correcte mapnaam
+    const newZip = new AdmZip()
+
+    for (const entry of entries) {
+      if (entry.isDirectory) continue
+
+      let relativePath = entry.entryName
+      if (hasSingleRoot) {
+        // Strip de bestaande root-mapnaam
+        const oldRoot = [...topLevelNames][0]
+        relativePath = relativePath.replace(new RegExp(`^${oldRoot}/`), '')
+      }
+
+      newZip.addFile(`${folderName}/${relativePath}`, entry.getData())
+    }
+
+    const buffer = newZip.toBuffer()
+
+    // RFC 6266: ASCII fallback + UTF-8 geëncodeerde bestandsnaam
+    const asciiName = folderName.replace(/[^\x20-\x7E]/g, '_') + '.zip'
+    const encodedName = encodeURIComponent(folderName + '.zip')
+
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="${asciiName}"; filename*=UTF-8''${encodedName}`,
-        'Content-Length': stat.size.toString(),
         'Cache-Control': 'no-store',
       },
     })
