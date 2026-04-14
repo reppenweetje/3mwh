@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const router = useRouter()
+  const [project, setProject] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -13,6 +14,12 @@ export default function LoginPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
+
+    if (project.trim().toLowerCase() !== '3e merwedehaven') {
+      setError('Vul een correct project in')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -46,9 +53,6 @@ export default function LoginPage() {
           <p className="text-xs font-bold text-[#edff00] uppercase tracking-widest mb-4">
             Inschrijvingen dashboard
           </p>
-          <h2 className="text-4xl font-black text-white leading-tight tracking-tight mb-4">
-            3e Merwedehaven
-          </h2>
           <p className="text-sm text-[#ffffff55] leading-relaxed max-w-xs">
             Beveiligde omgeving voor het bekijken en beoordelen van alle ingediende inschrijvingen.
           </p>
@@ -61,11 +65,24 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-8 py-12">
         <div className="w-full max-w-sm">
 
-          <p className="text-xs font-bold text-[#1b23aa] uppercase tracking-widest mb-1">3e Merwedehaven</p>
           <h1 className="text-2xl font-black text-[#0f0f70] mb-1 tracking-tight">Inloggen</h1>
           <p className="text-sm text-[#9a9898] mb-8">Vul je gegevens in om verder te gaan.</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-xs font-bold text-[#0f0f70] mb-2 uppercase tracking-wider">
+                Project
+              </label>
+              <input
+                type="text"
+                value={project}
+                onChange={(e) => setProject(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-white border border-[#d8d6d6] text-[#0f0f70] placeholder-[#d8d6d6] focus:outline-none focus:border-[#1b23aa] focus:ring-2 focus:ring-[#1b23aa]/10 transition-colors text-sm font-medium rounded-lg"
+                placeholder="3e merwedehaven"
+              />
+            </div>
+
             <div>
               <label className="block text-xs font-bold text-[#0f0f70] mb-2 uppercase tracking-wider">
                 Gebruikersnaam
