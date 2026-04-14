@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { upload } from '@vercel/blob/client'
 
 interface Lead { id: string; bedrijf: string }
 interface Props { leads: Lead[] }
@@ -31,12 +30,47 @@ export default function UploadClient({ leads }: Props) {
     }
     setUploading(true)
     setMessage(null)
+
+    const CHUNK_SIZE = 4 * 1024 * 1024 // 4MB per deel
+
     try {
-      await upload(`docs/lead-${selectedLeadId}-${file.name}`, file, {
-        access: 'public',
-        handleUploadUrl: '/api/admin/upload',
-        clientPayload: JSON.stringify({ leadId: selectedLeadId }),
+      // Stap 1: start multipart upload
+      const startRes = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'start', leadId: selectedLeadId, filename: file.name }),
       })
+      const { key, uploadId, error: startError } = await startRes.json()
+      if (!startRes.ok) throw new Error(startError ?? 'Upload starten mislukt')
+
+      // Stap 2: upload in delen van 4MB
+      const parts: { partNumber: number; etag: string }[] = []
+      const totalParts = Math.ceil(file.size / CHUNK_SIZE)
+
+      for (let i = 0; i < totalParts; i++) {
+        const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE)
+        const buffer = await chunk.arrayBuffer()
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+
+        const partRes = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'part', key, uploadId, partNumber: i + 1, data: base64 }),
+        })
+        const { etag, error: partError } = await partRes.json()
+        if (!partRes.ok) throw new Error(partError ?? `Deel ${i + 1} uploaden mislukt`)
+        parts.push({ partNumber: i + 1, etag })
+      }
+
+      // Stap 3: afronden
+      const completeRes = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'complete', key, uploadId, parts, leadId: selectedLeadId }),
+      })
+      const { error: completeError } = await completeRes.json()
+      if (!completeRes.ok) throw new Error(completeError ?? 'Upload afronden mislukt')
+
       setMessage({ type: 'ok', text: `Geüpload voor: ${leads.find(l => l.id === selectedLeadId)?.bedrijf}` })
       setFile(null)
       setSelectedLeadId('')

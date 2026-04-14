@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { handleUpload, type HandleUploadBody } from '@vercel/blob'
+import { createMultipartUpload, uploadPart, completeMultipartUpload } from '@vercel/blob'
 import { setDocumentUrl } from '@/lib/manifest'
 import { COOKIE_NAME } from '@/lib/auth'
 import { jwtVerify } from 'jose'
@@ -25,29 +25,45 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Niet ingelogd' }, { status: 401 })
   }
 
-  const body = (await request.json()) as HandleUploadBody
+  const body = await request.json().catch(() => null)
+  if (!body) return NextResponse.json({ error: 'Ongeldig verzoek' }, { status: 400 })
 
-  const jsonResponse = await handleUpload({
-    body,
-    request,
-    onBeforeGenerateToken: async (_pathname, clientPayload) => {
-      return {
-        allowedContentTypes: [
-          'application/zip',
-          'application/x-zip-compressed',
-          'application/octet-stream',
-        ],
-        maximumSizeInBytes: 100 * 1024 * 1024,
-        tokenPayload: clientPayload ?? '',
-      }
-    },
-    onUploadCompleted: async ({ blob, tokenPayload }) => {
-      const { leadId } = JSON.parse(tokenPayload ?? '{}')
-      if (leadId) {
-        await setDocumentUrl(leadId, blob.url)
-      }
-    },
-  })
+  const { action } = body
 
-  return NextResponse.json(jsonResponse)
+  // Stap 1: start een multipart upload sessie
+  if (action === 'start') {
+    const { leadId, filename } = body
+    if (!leadId || !filename) {
+      return NextResponse.json({ error: 'leadId en filename zijn verplicht' }, { status: 400 })
+    }
+    const { key, uploadId } = await createMultipartUpload(
+      `docs/lead-${leadId}-${filename}`,
+      { access: 'public', contentType: 'application/zip' }
+    )
+    return NextResponse.json({ key, uploadId })
+  }
+
+  // Stap 2: upload een deel
+  if (action === 'part') {
+    const { key, uploadId, partNumber, data } = body
+    if (!key || !uploadId || !partNumber || !data) {
+      return NextResponse.json({ error: 'Ontbrekende velden voor part upload' }, { status: 400 })
+    }
+    const buffer = Buffer.from(data, 'base64')
+    const part = await uploadPart(key, buffer, { uploadId, partNumber })
+    return NextResponse.json({ etag: part.etag })
+  }
+
+  // Stap 3: upload afronden
+  if (action === 'complete') {
+    const { key, uploadId, parts, leadId } = body
+    if (!key || !uploadId || !parts || !leadId) {
+      return NextResponse.json({ error: 'Ontbrekende velden voor complete' }, { status: 400 })
+    }
+    const blob = await completeMultipartUpload(key, parts, { uploadId })
+    await setDocumentUrl(leadId, blob.url)
+    return NextResponse.json({ ok: true, url: blob.url })
+  }
+
+  return NextResponse.json({ error: 'Onbekende actie' }, { status: 400 })
 }
