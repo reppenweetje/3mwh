@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { head } from '@vercel/blob'
-import { getManifest } from '@/lib/manifest'
+import fs from 'fs'
 import { COOKIE_NAME } from '@/lib/auth'
 import { jwtVerify } from 'jose'
+import { docExists, docPath } from '@/lib/getDocs'
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET ?? 'fallback-dev-secret-change-in-production'
@@ -33,33 +33,38 @@ export async function GET(
     return NextResponse.json({ error: 'leadId ontbreekt' }, { status: 400 })
   }
 
-  const manifest = await getManifest()
-  const blobUrl = manifest[leadId]
-
-  if (!blobUrl) {
+  if (!docExists(leadId)) {
     return NextResponse.json({ error: 'Geen document gevonden voor deze lead' }, { status: 404 })
   }
 
+  const filePath = docPath(leadId)
+
   try {
-    // Haal signed downloadUrl op — nodig voor private blobs
-    const blobInfo = await head(blobUrl)
-    const blobRes = await fetch(blobInfo.downloadUrl)
+    const stat = fs.statSync(filePath)
+    const nodeStream = fs.createReadStream(filePath)
 
-    if (!blobRes.ok) {
-      return NextResponse.json({ error: 'Document niet beschikbaar' }, { status: 502 })
-    }
-
-    const filename = blobInfo.pathname.split('/').pop() ?? `lead-${leadId}.zip`
-    const contentLength = blobRes.headers.get('content-length')
-
-    const headers = new Headers({
-      'Content-Type': 'application/zip',
-      'Content-Disposition': `attachment; filename="${filename}"`,
-      'Cache-Control': 'no-store',
+    const webStream = new ReadableStream({
+      start(controller) {
+        nodeStream.on('data', (chunk) =>
+          controller.enqueue(chunk instanceof Buffer ? chunk : Buffer.from(chunk))
+        )
+        nodeStream.on('end', () => controller.close())
+        nodeStream.on('error', (err) => controller.error(err))
+      },
+      cancel() {
+        nodeStream.destroy()
+      },
     })
-    if (contentLength) headers.set('Content-Length', contentLength)
 
-    return new NextResponse(blobRes.body, { status: 200, headers })
+    return new NextResponse(webStream, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': `attachment; filename="lead-${leadId}.zip"`,
+        'Content-Length': stat.size.toString(),
+        'Cache-Control': 'no-store',
+      },
+    })
   } catch {
     return NextResponse.json({ error: 'Fout bij ophalen document' }, { status: 500 })
   }

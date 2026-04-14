@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { parseLeads } from '@/lib/parseLeads'
-import { getManifest } from '@/lib/manifest'
+import { getDocIds } from '@/lib/getDocs'
 import AccordionTable from '@/components/AccordionTable'
 import LogoutButton from '@/components/LogoutButton'
 
@@ -8,10 +8,10 @@ export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const leads = parseLeads()
-  const manifest = await getManifest()
+  const docIds = getDocIds()
 
   const topScore = leads.length ? Math.max(...leads.map((l) => l.score)) : 0
-  const metDocumenten = Object.keys(manifest).length
+  const metDocumenten = docIds.size
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
@@ -76,7 +76,7 @@ export default async function HomePage() {
 
       {/* ── Tabel ───────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-10 w-full flex-1">
-        <AccordionTable leads={leads} manifest={manifest} />
+        <AccordionTable leads={leads} docIds={[...docIds]} />
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────── */}

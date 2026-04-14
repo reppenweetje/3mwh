@@ -8,13 +8,14 @@ import SearchFilterBar from './SearchFilterBar'
 
 interface Props {
   leads: Lead[]
-  manifest: Record<string, string>
+  docIds: string[]
 }
 
-export default function AccordionTable({ leads, manifest }: Props) {
+export default function AccordionTable({ leads, docIds }: Props) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'score' | 'date'>('score')
   const rowRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const docSet = useMemo(() => new Set(docIds), [docIds])
 
   const filtered = useMemo(() => {
     let result = [...leads]
@@ -96,7 +97,7 @@ export default function AccordionTable({ leads, manifest }: Props) {
                   rank={idx + 1}
                 />
                 {openId === lead.id && (
-                  <LeadExpandedPanel lead={lead} hasDocument={!!manifest[lead.id]} />
+                  <LeadExpandedPanel lead={lead} hasDocument={docSet.has(lead.id)} />
                 )}
               </div>
             ))}

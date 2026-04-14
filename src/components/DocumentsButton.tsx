@@ -1,8 +1,20 @@
 interface Props {
   leadId: string
+  disabled?: boolean
 }
 
-export default function DocumentsButton({ leadId }: Props) {
+export default function DocumentsButton({ leadId, disabled }: Props) {
+  if (disabled) {
+    return (
+      <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#f2f2f2] text-[#c0c0c0] font-bold text-sm uppercase tracking-wide cursor-not-allowed select-none">
+        <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+        Nog niet beschikbaar
+      </span>
+    )
+  }
+
   return (
     <a
       href={`/api/download/${leadId}`}

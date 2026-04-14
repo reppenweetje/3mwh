@@ -47,11 +47,7 @@ export default function LeadExpandedPanel({ lead, hasDocument }: Props) {
           </div>
         </div>
 
-        {hasDocument ? (
-          <DocumentsButton leadId={lead.id} />
-        ) : (
-          <span className="text-xs text-[#c8c8c8] italic font-medium">Documenten nog niet beschikbaar</span>
-        )}
+        <DocumentsButton leadId={lead.id} disabled={!hasDocument} />
       </div>
 
       {/* Samenvatting */}
