@@ -50,7 +50,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Ontbrekende velden voor part upload' }, { status: 400 })
     }
     const buffer = Buffer.from(data, 'base64')
-    const part = await uploadPart(key, buffer, { key, uploadId, partNumber })
+    const part = await uploadPart(key, buffer, { key, uploadId, partNumber, access: 'public' })
     return NextResponse.json({ etag: part.etag })
   }
 
