@@ -40,14 +40,30 @@ export async function GET(
 
   const filePath = docPath(leadId)
 
-  // Bouw bestandsnaam: "{Bedrijf} - {datum}.zip"
+  // Bouw bestandsnaam: "{Bedrijf} - {DD MMM YYYY}.zip"
   const leads = parseLeads()
   const lead = leads.find((l) => l.id === leadId)
-  const rawDate = lead?.ingediendOp?.split(',')[0]?.trim() ?? ''
-  const safeName = `${lead?.bedrijf ?? `lead-${leadId}`}${rawDate ? ` - ${rawDate}` : ''}`
-    .replace(/[/\\:*?"<>|]/g, '')
+
+  // Extraheer alleen "10 apr 2026" uit strings zoals "10 apr. 2026 om 13:33"
+  function extractDate(str: string): string {
+    const MONTHS: Record<string, string> = {
+      jan: 'jan', feb: 'feb', mrt: 'mrt', apr: 'apr', mei: 'mei', jun: 'jun',
+      jul: 'jul', aug: 'aug', sep: 'sep', okt: 'okt', nov: 'nov', dec: 'dec',
+    }
+    const m = str.match(/(\d{1,2})\s+([a-zA-Z]+)\.?\s+(\d{4})/)
+    if (!m) return ''
+    const month = MONTHS[m[2].toLowerCase()] ?? m[2].toLowerCase()
+    return `${m[1]} ${month} ${m[3]}`
+  }
+
+  const cleanDate = lead?.ingediendOp ? extractDate(lead.ingediendOp) : ''
+  const baseName = `${lead?.bedrijf ?? `lead-${leadId}`}${cleanDate ? ` - ${cleanDate}` : ''}`
+    .replace(/[/\\:*?"<>|.]/g, '')
     .trim()
-  const filename = `${safeName}.zip`
+
+  // RFC 6266: ASCII fallback + UTF-8 geëncodeerde naam
+  const asciiName = baseName.replace(/[^\x20-\x7E]/g, '_') + '.zip'
+  const encodedName = encodeURIComponent(baseName + '.zip')
 
   try {
     const stat = fs.statSync(filePath)
@@ -70,7 +86,7 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `attachment; filename="${asciiName}"; filename*=UTF-8''${encodedName}`,
         'Content-Length': stat.size.toString(),
         'Cache-Control': 'no-store',
       },
